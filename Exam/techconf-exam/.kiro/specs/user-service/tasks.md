@@ -158,7 +158,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-09 — Route GET, PUT, PATCH, DELETE per singolo utente**
+- [x] **T-09 — Route GET, PUT, PATCH, DELETE per singolo utente**
 
   Implementa in `routes.py` le restanti route su `/api/v1/users/<id>`.
 

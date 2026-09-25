@@ -172,3 +172,67 @@ def register_routes(app, service):
 
         items, total = service.list_users(role, email, page, page_size)
         return jsonify(_paginate(items, page, page_size, total)), 200
+
+    # ------------------------------------------------------------------
+    # GET /api/v1/users/<user_id> — Lettura singolo utente  (REQ-USR-E03)
+    # ------------------------------------------------------------------
+
+    @app.route("/api/v1/users/<user_id>", methods=["GET"])
+    def get_user(user_id):
+        try:
+            user = service.get_user(user_id)
+            return jsonify(_serialize_user(user)), 200
+        except UserNotFoundError:
+            return _error_response("NOT_FOUND", f"User '{user_id}' not found.", 404)
+
+    # ------------------------------------------------------------------
+    # PUT /api/v1/users/<user_id> — Sostituzione completa  (REQ-USR-E04)
+    # ------------------------------------------------------------------
+
+    @app.route("/api/v1/users/<user_id>", methods=["PUT"])
+    def replace_user(user_id):
+        data = request.get_json(force=True, silent=False)
+        if data is None:
+            return _error_response("MALFORMED_JSON", "Request body is not valid JSON.", 400)
+        errors = _validate_user_input(data, partial=False)
+        if errors:
+            return _error_response("VALIDATION_ERROR", "; ".join(errors), 422)
+        try:
+            user = service.replace_user(user_id, data)
+            return jsonify(_serialize_user(user)), 200
+        except UserNotFoundError:
+            return _error_response("NOT_FOUND", f"User '{user_id}' not found.", 404)
+        except EmailAlreadyExistsError:
+            return _error_response("EMAIL_ALREADY_EXISTS", "Email already registered.", 409)
+
+    # ------------------------------------------------------------------
+    # PATCH /api/v1/users/<user_id> — Aggiornamento parziale  (REQ-USR-E05)
+    # ------------------------------------------------------------------
+
+    @app.route("/api/v1/users/<user_id>", methods=["PATCH"])
+    def update_user(user_id):
+        data = request.get_json(force=True, silent=False)
+        if data is None:
+            return _error_response("MALFORMED_JSON", "Request body is not valid JSON.", 400)
+        errors = _validate_user_input(data, partial=True)
+        if errors:
+            return _error_response("VALIDATION_ERROR", "; ".join(errors), 422)
+        try:
+            user = service.update_user(user_id, data)
+            return jsonify(_serialize_user(user)), 200
+        except UserNotFoundError:
+            return _error_response("NOT_FOUND", f"User '{user_id}' not found.", 404)
+        except EmailAlreadyExistsError:
+            return _error_response("EMAIL_ALREADY_EXISTS", "Email already registered.", 409)
+
+    # ------------------------------------------------------------------
+    # DELETE /api/v1/users/<user_id> — Cancellazione utente  (REQ-USR-E06)
+    # ------------------------------------------------------------------
+
+    @app.route("/api/v1/users/<user_id>", methods=["DELETE"])
+    def delete_user(user_id):
+        try:
+            service.delete_user(user_id)
+            return "", 204
+        except UserNotFoundError:
+            return _error_response("NOT_FOUND", f"User '{user_id}' not found.", 404)
