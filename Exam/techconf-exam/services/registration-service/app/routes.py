@@ -1,0 +1,25 @@
+from flask import jsonify, request
+
+
+def _error_response(code, message, status, details=None):
+    """Costruisce il corpo conforme allo schema `Error` del contratto."""
+    body = {"error": {"code": code, "message": message, "details": details or {}}}
+    return jsonify(body), status
+
+
+def register_routes(app, service):
+    @app.route("/health", methods=["GET"])
+    def health():
+        return jsonify({"status": "ok", "service": "registration-service"}), 200
+
+    @app.errorhandler(400)
+    def handle_bad_request(e):
+        return _error_response("MALFORMED_JSON", "Request body is not valid JSON.", 400)
+
+    @app.errorhandler(405)
+    def handle_method_not_allowed(e):
+        # Il default HTML di Werkzeug non rispetta lo schema `Error` richiesto
+        # dal contratto per il PUT su /api/v1/registrations/{id}.
+        return _error_response(
+            "METHOD_NOT_ALLOWED", "Method not allowed for this resource.", 405
+        )
