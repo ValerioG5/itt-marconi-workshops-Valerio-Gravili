@@ -252,7 +252,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-13 — Test di contratto (`test_contract.py`)**
+- [x] **T-13 — Test di contratto (`test_contract.py`)**
 
   Scrivi `tests/test_contract.py` verificando ogni endpoint contro `contracts/openapi/user-service.yaml` tramite `assert_matches_contract`.
 

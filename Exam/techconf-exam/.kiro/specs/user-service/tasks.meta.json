@@ -144,6 +144,18 @@
         "chatSessionId": "sess_1ee5961e-2b99-4b52-9a96-ab5265f4f120",
         "timestamp": 1790342029223
       }
+    ],
+    "**T-13 — Test di contratto (`test_contract.py`)**": [
+      {
+        "executionId": "b36366be-d741-4e3d-834b-82187ad7999c",
+        "chatSessionId": "sess_1ee5961e-2b99-4b52-9a96-ab5265f4f120",
+        "timestamp": 1790342036822
+      },
+      {
+        "executionId": "b36366be-d741-4e3d-834b-82187ad7999c",
+        "chatSessionId": "sess_1ee5961e-2b99-4b52-9a96-ab5265f4f120",
+        "timestamp": 1790342179119
+      }
     ]
   }
 }
