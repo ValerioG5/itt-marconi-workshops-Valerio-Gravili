@@ -1,4 +1,4 @@
-ï»¿# event-service â€” Requirements
+# event-service — Requirements
 
 Servizio: **event-service**
 Base path: `/api/v1/events`
@@ -9,7 +9,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-00 â€” Health check
+## REQ-EVT-00 — Health check
 
 **User story:** As an operator, I want a health endpoint so that the acceptance harness can verify the service is up before sending traffic.
 
@@ -20,7 +20,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-F01 â€” Struttura della risorsa Event
+## REQ-EVT-F01 — Struttura della risorsa Event
 
 **User story:** As an API consumer, I want every event to expose a stable set of fields so that I can rely on a consistent schema.
 
@@ -36,7 +36,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-F02 â€” Validazione dei campi in input
+## REQ-EVT-F02 — Validazione dei campi in input
 
 **User story:** As an API client, I want malformed payloads rejected with clear errors so that I can correct my request.
 
@@ -57,10 +57,16 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 13. IF `status` is absent from a creation request THEN THE event-service SHALL default it to `draft`.
 14. IF `description` is absent THEN THE event-service SHALL store and return it as `null`.
 15. THE event-service SHALL return every error using the structure `{"error": {"code": "...", "message": "...", "details": {...}}}` as defined in `platform-standards.md`.
+16. WHEN `title` consists only of whitespace characters THE event-service SHALL respond `422` with `error.code = "VALIDATION_ERROR"`.
+17. WHEN `venue` consists only of whitespace characters THE event-service SHALL respond `422` with `error.code = "VALIDATION_ERROR"`.
+18. WHEN `city` consists only of whitespace characters THE event-service SHALL respond `422` with `error.code = "VALIDATION_ERROR"`.
+19. THE event-service SHALL apply the length checks of required string fields to the trimmed value, so that a whitespace-only value is rejected exactly as an empty one.
+
+_Nota (BUG-02): i criteri 16-19 sono stati aggiunti dopo aver rilevato che un evento con `title`, `venue` e `city` pari a `"   "` veniva accettato con `201`. I criteri 3, 6 e 7 vincolavano solo la lunghezza grezza, che una stringa di spazi soddisfa: la lacuna era nel requisito, non nel codice._
 
 ---
 
-## REQ-EVT-B01 â€” L'organizzatore deve esistere
+## REQ-EVT-B01 — L'organizzatore deve esistere
 
 **User story:** As a platform owner, I want every event to reference a real user as organizer, so that events are never orphaned.
 
@@ -74,7 +80,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-B02 â€” L'organizzatore deve avere role = organizer
+## REQ-EVT-B02 — L'organizzatore deve avere role = organizer
 
 **User story:** As a platform owner, I want only users with the organizer role to own events, so that permissions are respected.
 
@@ -87,7 +93,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-B03 â€” end_date non puÃ² precedere start_date
+## REQ-EVT-B03 — end_date non può precedere start_date
 
 **User story:** As an organizer, I want the system to reject impossible date ranges so that event schedules are always coherent.
 
@@ -101,7 +107,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-B04 â€” Transizioni di stato ammesse
+## REQ-EVT-B04 — Transizioni di stato ammesse
 
 **User story:** As an organizer, I want the event lifecycle enforced so that an event cannot go back to an earlier state.
 
@@ -117,7 +123,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-B05 â€” user-service non raggiungibile
+## REQ-EVT-B05 — user-service non raggiungibile
 
 **User story:** As an operator, I want a clear 503 when a dependency is down so that failures are not mistaken for validation errors.
 
@@ -132,7 +138,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-B06 â€” Filtri sulla lista eventi
+## REQ-EVT-B06 — Filtri sulla lista eventi
 
 **User story:** As an attendee, I want to filter events by status and city so that I can find relevant conferences.
 
@@ -146,7 +152,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-E01 â€” POST /api/v1/events â€” Creazione evento
+## REQ-EVT-E01 — POST /api/v1/events — Creazione evento
 
 **User story:** As an organizer, I want to create a conference so that attendees can later register for it.
 
@@ -163,7 +169,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-E02 â€” GET /api/v1/events â€” Lista paginata
+## REQ-EVT-E02 — GET /api/v1/events — Lista paginata
 
 **User story:** As an attendee, I want a paginated event list so that I can browse without loading everything.
 
@@ -178,7 +184,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-E03 â€” GET /api/v1/events/{id} â€” Lettura singolo evento
+## REQ-EVT-E03 — GET /api/v1/events/{id} — Lettura singolo evento
 
 **User story:** As a service consumer (e.g. registration-service), I want to fetch a single event so that I can validate references and read capacity and price.
 
@@ -190,7 +196,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-E04 â€” PUT /api/v1/events/{id} â€” Sostituzione completa
+## REQ-EVT-E04 — PUT /api/v1/events/{id} — Sostituzione completa
 
 **User story:** As an organizer, I want to replace all event data in one call so that I can apply several changes atomically.
 
@@ -207,7 +213,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-E05 â€” PATCH /api/v1/events/{id} â€” Aggiornamento parziale
+## REQ-EVT-E05 — PATCH /api/v1/events/{id} — Aggiornamento parziale
 
 **User story:** As an organizer, I want to update single fields so that I do not have to resend the whole event.
 
@@ -223,7 +229,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-E06 â€” DELETE /api/v1/events/{id} â€” Cancellazione evento
+## REQ-EVT-E06 — DELETE /api/v1/events/{id} — Cancellazione evento
 
 **User story:** As an organizer, I want to delete an event so that obsolete records are removed.
 
@@ -236,7 +242,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-P01 â€” Persistenza multi-backend
+## REQ-EVT-P01 — Persistenza multi-backend
 
 **User story:** As a developer, I want three interchangeable storage backends so that tests run in memory and deployments can persist to disk.
 
@@ -250,7 +256,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-P02 â€” Configurazione e avvio
+## REQ-EVT-P02 — Configurazione e avvio
 
 **User story:** As an operator, I want all runtime parameters supplied via environment variables so that no code change is needed to deploy.
 
@@ -265,7 +271,7 @@ Dipendenze: **user-service** (validazione `organizer_id`)
 
 ---
 
-## REQ-EVT-C01 â€” ConformitÃ  al contratto OpenAPI
+## REQ-EVT-C01 — Conformità al contratto OpenAPI
 
 **User story:** As a platform integrator, I want every response to match the contract so that clients and downstream services can rely on it.
 

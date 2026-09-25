@@ -1,4 +1,4 @@
-ï»¿# user-service â€” Requirements
+# user-service — Requirements
 
 Servizio: **user-service**
 Base path: `/api/v1/users`
@@ -8,7 +8,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-00 â€” Health check
+## REQ-USR-00 — Health check
 
 **User story:** As an operator, I want a health endpoint so that the test harness and monitoring tools can verify the service is running before sending traffic.
 
@@ -19,7 +19,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-F01 â€” Struttura della risorsa User
+## REQ-USR-F01 — Struttura della risorsa User
 
 **User story:** As a consumer of the API, I want every user resource to carry a stable set of fields so that I can rely on a consistent shape in every response.
 
@@ -33,7 +33,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-F02 â€” Validazione dei campi in input
+## REQ-USR-F02 — Validazione dei campi in input
 
 **User story:** As an API client, I want the service to reject malformed or incomplete payloads immediately so that I receive clear feedback about what is wrong.
 
@@ -51,10 +51,16 @@ Contratto: `contracts/openapi/user-service.yaml`
 10. IF `role` is absent from the request body THEN THE user-service SHALL default it to `attendee`.
 11. IF `company` is absent from the request body THEN THE user-service SHALL store and return it as `null`.
 12. THE user-service SHALL return all validation errors using the structure `{"error": {"code": "...", "message": "...", "details": {}}}` as defined in `platform-standards.md`.
+13. WHEN `first_name` consists only of whitespace characters THE user-service SHALL respond `422` with `error.code = "VALIDATION_ERROR"`.
+14. WHEN `last_name` consists only of whitespace characters THE user-service SHALL respond `422` with `error.code = "VALIDATION_ERROR"`.
+15. WHEN `email` consists only of whitespace characters THE user-service SHALL respond `422` with `error.code = "VALIDATION_ERROR"`.
+16. THE user-service SHALL treat a whitespace-only value for any required string field as equivalent to an empty value: length checks SHALL be applied to the trimmed value, so that `"   "` is rejected exactly as `""` is.
+
+_Nota (BUG-02): i criteri 13-16 sono stati aggiunti dopo aver rilevato che un `first_name` pari a `"   "` veniva accettato con `201`. Il criterio 2 parlava di campo "absent or empty" senza definire se una stringa di soli spazi contasse come vuota: la lacuna era nel requisito, non nel codice._
 
 ---
 
-## REQ-USR-B01 â€” UnicitÃ  email (case-insensitive)
+## REQ-USR-B01 — Unicità email (case-insensitive)
 
 **User story:** As an organizer, I want the platform to prevent two accounts sharing the same email address so that user identity is unambiguous.
 
@@ -67,7 +73,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-B02 â€” Normalizzazione email
+## REQ-USR-B02 — Normalizzazione email
 
 **User story:** As a platform engineer, I want all emails stored in lowercase so that lookups and comparisons are always consistent.
 
@@ -79,7 +85,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-B03 â€” Filtri sulla lista utenti
+## REQ-USR-B03 — Filtri sulla lista utenti
 
 **User story:** As an event organizer, I want to filter the user list by role or email so that I can find specific users quickly.
 
@@ -93,7 +99,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-E01 â€” POST /api/v1/users â€” Creazione utente
+## REQ-USR-E01 — POST /api/v1/users — Creazione utente
 
 **User story:** As a new conference attendee, I want to register my account so that I can access the platform features.
 
@@ -109,7 +115,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-E02 â€” GET /api/v1/users â€” Lista paginata
+## REQ-USR-E02 — GET /api/v1/users — Lista paginata
 
 **User story:** As an admin, I want to retrieve a paginated list of users so that I can browse large datasets without loading everything at once.
 
@@ -123,7 +129,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-E03 â€” GET /api/v1/users/{id} â€” Lettura singolo utente
+## REQ-USR-E03 — GET /api/v1/users/{id} — Lettura singolo utente
 
 **User story:** As a service consumer (e.g. event-service), I want to fetch a single user by ID so that I can validate references and read user data.
 
@@ -134,7 +140,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-E04 â€” PUT /api/v1/users/{id} â€” Sostituzione completa
+## REQ-USR-E04 — PUT /api/v1/users/{id} — Sostituzione completa
 
 **User story:** As a user, I want to replace all my profile data in a single operation so that I can update several fields at once atomically.
 
@@ -149,7 +155,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-E05 â€” PATCH /api/v1/users/{id} â€” Aggiornamento parziale
+## REQ-USR-E05 — PATCH /api/v1/users/{id} — Aggiornamento parziale
 
 **User story:** As a user, I want to update only specific fields of my profile so that I do not have to resend unchanged data.
 
@@ -164,7 +170,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-E06 â€” DELETE /api/v1/users/{id} â€” Cancellazione utente
+## REQ-USR-E06 — DELETE /api/v1/users/{id} — Cancellazione utente
 
 **User story:** As an admin, I want to delete a user account so that stale records are removed from the platform.
 
@@ -176,7 +182,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-P01 â€” Persistenza multi-backend
+## REQ-USR-P01 — Persistenza multi-backend
 
 **User story:** As a developer, I want the service to support three storage backends interchangeably so that I can run it in-memory during tests and on disk in production.
 
@@ -190,7 +196,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-P02 â€” Configurazione e avvio
+## REQ-USR-P02 — Configurazione e avvio
 
 **User story:** As a platform operator, I want all runtime parameters to be read from environment variables so that the service can be configured without code changes.
 
@@ -204,7 +210,7 @@ Contratto: `contracts/openapi/user-service.yaml`
 
 ---
 
-## REQ-USR-C01 â€” ConformitÃ  al contratto OpenAPI
+## REQ-USR-C01 — Conformità al contratto OpenAPI
 
 **User story:** As a platform integrator, I want every response to conform to the OpenAPI contract so that downstream services and clients can rely on a stable schema.
 
