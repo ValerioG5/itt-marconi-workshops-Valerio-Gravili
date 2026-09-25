@@ -55,10 +55,10 @@ def _validate_event_input(data: dict, partial: bool = False) -> list:
     """
     errors = []
 
-    # title — 3..120 caratteri
+    # title — 3..120 caratteri (sul valore trimmed, BUG-02)
     if "title" in data:
         v = data["title"]
-        if not isinstance(v, str) or not (3 <= len(v) <= 120):
+        if not isinstance(v, str) or not (3 <= len(v.strip()) <= 120):
             errors.append("title must be a string of 3–120 characters.")
     elif not partial:
         errors.append("title is required.")
@@ -77,18 +77,18 @@ def _validate_event_input(data: dict, partial: bool = False) -> list:
     elif not partial:
         errors.append("organizer_id is required.")
 
-    # venue — 1..100 caratteri
+    # venue — 1..100 caratteri (sul valore trimmed, BUG-02)
     if "venue" in data:
         v = data["venue"]
-        if not isinstance(v, str) or not (1 <= len(v) <= 100):
+        if not isinstance(v, str) or not (1 <= len(v.strip()) <= 100):
             errors.append("venue must be a string of 1–100 characters.")
     elif not partial:
         errors.append("venue is required.")
 
-    # city — 1..60 caratteri
+    # city — 1..60 caratteri (sul valore trimmed, BUG-02)
     if "city" in data:
         v = data["city"]
-        if not isinstance(v, str) or not (1 <= len(v) <= 60):
+        if not isinstance(v, str) or not (1 <= len(v.strip()) <= 60):
             errors.append("city must be a string of 1–60 characters.")
     elif not partial:
         errors.append("city is required.")

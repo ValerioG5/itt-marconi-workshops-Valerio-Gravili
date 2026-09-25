@@ -436,3 +436,47 @@ def test_delete_event_404(client):
 
     assert r.status_code == 404
     assert r.get_json()["error"]["code"] == "NOT_FOUND"
+
+
+# -----------------------------------------------------------------------
+# BUG-02 — campi stringa whitespace-only
+# -----------------------------------------------------------------------
+
+@pytest.mark.req("REQ-EVT-F02")
+@responses.activate
+def test_post_event_422_whitespace_title(client):
+    """BUG-02: criterio 16."""
+    _mock_organizer()
+    r = client.post("/api/v1/events", json=_payload(title="     "))
+    assert r.status_code == 422
+    assert r.get_json()["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.req("REQ-EVT-F02")
+@responses.activate
+def test_post_event_422_whitespace_venue(client):
+    """BUG-02: criterio 17."""
+    _mock_organizer()
+    r = client.post("/api/v1/events", json=_payload(venue="   "))
+    assert r.status_code == 422
+    assert r.get_json()["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.req("REQ-EVT-F02")
+@responses.activate
+def test_post_event_422_whitespace_city(client):
+    """BUG-02: criterio 18."""
+    _mock_organizer()
+    r = client.post("/api/v1/events", json=_payload(city="  "))
+    assert r.status_code == 422
+    assert r.get_json()["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.req("REQ-EVT-F02")
+@responses.activate
+def test_post_event_201_preserves_inner_spaces(client):
+    """Il .strip() decide solo se accettare: non riscrive il valore."""
+    _mock_organizer()
+    r = client.post("/api/v1/events", json=_payload(title="PyConf Italia 2026"))
+    assert r.status_code == 201
+    assert r.get_json()["title"] == "PyConf Italia 2026"

@@ -32,26 +32,26 @@ def _validate_user_input(data: dict, partial: bool = False) -> list:
     """Valida i campi in input; restituisce lista di messaggi di errore."""
     errors = []
 
-    # first_name
+    # first_name — lunghezza valutata sul valore trimmed (BUG-02)
     if "first_name" in data:
         fn = data["first_name"]
-        if not isinstance(fn, str) or not (1 <= len(fn) <= 50):
+        if not isinstance(fn, str) or not (1 <= len(fn.strip()) <= 50):
             errors.append("first_name must be a string of 1–50 characters.")
     elif not partial:
         errors.append("first_name is required.")
 
-    # last_name
+    # last_name — lunghezza valutata sul valore trimmed (BUG-02)
     if "last_name" in data:
         ln = data["last_name"]
-        if not isinstance(ln, str) or not (1 <= len(ln) <= 50):
+        if not isinstance(ln, str) or not (1 <= len(ln.strip()) <= 50):
             errors.append("last_name must be a string of 1–50 characters.")
     elif not partial:
         errors.append("last_name is required.")
 
-    # email
+    # email — validata sul valore trimmed (BUG-02)
     if "email" in data:
         em = data["email"]
-        if not isinstance(em, str) or not _EMAIL_RE.match(em):
+        if not isinstance(em, str) or not em.strip() or not _EMAIL_RE.match(em.strip()):
             errors.append("email must be a valid email address (must contain @ and a domain).")
     elif not partial:
         errors.append("email is required.")

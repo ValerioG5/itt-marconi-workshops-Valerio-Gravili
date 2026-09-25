@@ -182,3 +182,51 @@ def test_delete_user_204(client):
     # verifica che GET successivo restituisca 404
     r2 = client.get(f"/api/v1/users/{created['id']}")
     assert r2.status_code == 404
+
+
+# -----------------------------------------------------------------------
+# BUG-02 — campi stringa whitespace-only
+# -----------------------------------------------------------------------
+
+@pytest.mark.req("REQ-USR-F02")
+def test_post_user_422_whitespace_first_name(client):
+    """BUG-02: "   " e' semanticamente vuoto e va rifiutato come "" (criterio 13)."""
+    r = client.post("/api/v1/users",
+                    json={"first_name": "   ", "last_name": "L", "email": "a@b.com"})
+    assert r.status_code == 422
+    assert json.loads(r.data)["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.req("REQ-USR-F02")
+def test_post_user_422_whitespace_last_name(client):
+    """BUG-02: criterio 14."""
+    r = client.post("/api/v1/users",
+                    json={"first_name": "Ada", "last_name": "  ", "email": "a@b.com"})
+    assert r.status_code == 422
+    assert json.loads(r.data)["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.req("REQ-USR-F02")
+def test_post_user_422_whitespace_email(client):
+    """BUG-02: criterio 15."""
+    r = client.post("/api/v1/users",
+                    json={"first_name": "Ada", "last_name": "L", "email": "   "})
+    assert r.status_code == 422
+    assert json.loads(r.data)["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.req("REQ-USR-F02")
+def test_patch_user_422_whitespace_first_name(client):
+    """BUG-02: la regola vale anche in PATCH (partial=True)."""
+    _, created = _post_user(client, email="patchws@b.com")
+    r = client.patch(f"/api/v1/users/{created['id']}", json={"first_name": "   "})
+    assert r.status_code == 422
+    assert json.loads(r.data)["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.req("REQ-USR-F02")
+def test_post_user_201_preserves_inner_spaces(client):
+    """Il .strip() decide solo se accettare: non riscrive il valore."""
+    r, body = _post_user(client, email="inner@b.com", first_name="Ada Maria")
+    assert r.status_code == 201
+    assert body["first_name"] == "Ada Maria"
