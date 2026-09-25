@@ -205,7 +205,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-11 — Test unitari: business logic (`test_service.py`)**
+- [x] **T-11 — Test unitari: business logic (`test_service.py`)**
 
   Scrivi `tests/test_service.py`.
 
