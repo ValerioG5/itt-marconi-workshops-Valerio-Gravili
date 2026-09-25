@@ -44,7 +44,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-03 — Repository memory**
+- [x] **T-03 — Repository memory**
 
   Implementa completamente `MemoryUserRepository`.
 
