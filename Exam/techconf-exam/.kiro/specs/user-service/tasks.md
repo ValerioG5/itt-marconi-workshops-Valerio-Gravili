@@ -75,7 +75,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-05 — Repository SQLite**
+- [x] **T-05 — Repository SQLite**
 
   Implementa completamente `SqliteUserRepository`.
 
