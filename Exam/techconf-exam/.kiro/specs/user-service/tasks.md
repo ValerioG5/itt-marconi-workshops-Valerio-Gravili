@@ -292,7 +292,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-15 — Verifica coverage e `requirements.txt`**
+- [x] **T-15 — Verifica coverage e `requirements.txt`**
 
   Esegui la suite completa e verifica la copertura.
 
