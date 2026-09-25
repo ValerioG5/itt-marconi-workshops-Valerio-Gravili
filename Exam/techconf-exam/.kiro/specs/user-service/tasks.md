@@ -183,7 +183,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-10 — Test unitari: repository (tutti e tre i backend)**
+- [x] **T-10 — Test unitari: repository (tutti e tre i backend)**
 
   Scrivi `tests/test_repository.py`.
 
