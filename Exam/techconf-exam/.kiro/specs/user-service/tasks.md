@@ -302,3 +302,16 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
   - Verifica che `requirements.txt` contenga tutte le dipendenze necessarie e che `pip install -r requirements.txt` non produca errori.
 
   _Requirements: REQ-USR-P01, REQ-USR-P02, REQ-USR-C01_
+
+---
+
+- [ ] **T-16 — Rifiuto dei campi stringa whitespace-only (BUG-02)**
+
+  Bug di specifica: i criteri di REQ-USR-F02 vincolavano la lunghezza del valore grezzo, quindi `first_name = "   "` veniva accettato con `201`. I nuovi criteri 13-16 richiedono che il controllo avvenga sul valore trimmed.
+
+  - In `routes.py::_validate_user_input`, applica i vincoli di lunghezza a `value.strip()` per `first_name`, `last_name` ed `email`.
+  - Il valore memorizzato resta quello inviato dal client: `.strip()` decide solo se accettare.
+  - `company` resta opzionale e non richiede il controllo di non-vuoto.
+  - Aggiungi in `tests/test_routes.py` i test `test_post_user_422_whitespace_first_name`, `test_post_user_422_whitespace_last_name`, `test_post_user_422_whitespace_email`.
+
+  _Requirements: REQ-USR-F02_

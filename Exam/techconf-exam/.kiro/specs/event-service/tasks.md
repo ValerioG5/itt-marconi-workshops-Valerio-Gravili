@@ -316,3 +316,15 @@ Commit per task: `feat(event-service): <descrizione> [T-XX]`
   - Verifica che `pip install -r requirements.txt` non produca errori.
 
   _Requirements: REQ-EVT-P01, REQ-EVT-P02, REQ-EVT-C01_
+
+---
+
+- [ ] **T-20 — Rifiuto dei campi stringa whitespace-only (BUG-02)**
+
+  Bug di specifica: i criteri 3, 6 e 7 di REQ-EVT-F02 vincolavano la lunghezza del valore grezzo, quindi un evento con `title`, `venue` e `city` pari a `"   "` veniva accettato con `201`. I nuovi criteri 16-19 richiedono il controllo sul valore trimmed.
+
+  - In `routes.py::_validate_event_input`, applica i vincoli di lunghezza a `value.strip()` per `title`, `venue` e `city`.
+  - Il valore memorizzato resta quello inviato dal client.
+  - Aggiungi in `tests/test_routes.py` i test `test_post_event_422_whitespace_title`, `test_post_event_422_whitespace_venue`, `test_post_event_422_whitespace_city`.
+
+  _Requirements: REQ-EVT-F02_
