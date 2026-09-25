@@ -272,7 +272,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-14 — Test di integrazione (`test_integration.py`)**
+- [x] **T-14 — Test di integrazione (`test_integration.py`)**
 
   Scrivi `tests/test_integration.py` che avvia il servizio reale come sottoprocesso.
 
