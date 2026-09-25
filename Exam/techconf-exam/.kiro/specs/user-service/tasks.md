@@ -103,7 +103,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-07 — `UserService` e regole di business**
+- [x] **T-07 — `UserService` e regole di business**
 
   Implementa la classe `UserService` in `service.py` con tutte le regole `REQ-USR-B*`.
 
