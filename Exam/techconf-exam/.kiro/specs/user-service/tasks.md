@@ -132,7 +132,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-08 — Route POST e GET lista**
+- [x] **T-08 — Route POST e GET lista**
 
   Implementa in `routes.py` le route di creazione e lista utenti.
 
