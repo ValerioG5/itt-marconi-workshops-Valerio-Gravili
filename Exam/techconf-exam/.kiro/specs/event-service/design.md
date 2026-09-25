@@ -1,7 +1,7 @@
-ï»¿# event-service â€” Design
+# event-service — Design
 
 Servizio: **event-service**
-Contratto: `contracts/openapi/event-service.yaml` â† fonte di veritÃ  dell'interfaccia HTTP
+Contratto: `contracts/openapi/event-service.yaml` ? fonte di verità dell'interfaccia HTTP
 Requirements: `.kiro/specs/event-service/requirements.md`
 Dipendenze runtime: **user-service** via HTTP
 
@@ -37,11 +37,11 @@ services/event-service/
   requirements.txt
 ```
 
-Rispetto a `user-service`, la novitÃ  Ã¨ la cartella `clients/`: event-service Ã¨ il primo servizio che chiama un altro servizio. Come stabilito in `structure.md`, con **una sola** dipendenza HTTP non introduciamo `base_client.py`: la logica di timeout ed error-mapping vive direttamente in `user_client.py`.
+Rispetto a `user-service`, la novità è la cartella `clients/`: event-service è il primo servizio che chiama un altro servizio. Come stabilito in `structure.md`, con **una sola** dipendenza HTTP non introduciamo `base_client.py`: la logica di timeout ed error-mapping vive direttamente in `user_client.py`.
 
 ---
 
-## 2. Componenti e responsabilitÃ 
+## 2. Componenti e responsabilità
 
 ### 2.1 `config.py`
 
@@ -55,9 +55,9 @@ DATA_DIR         = os.environ.get("DATA_DIR", "./data")
 DEPENDENCY_TIMEOUT = 2  # secondi, fisso (platform-standards.md)
 ```
 
-Nessun altro modulo chiama `os.environ.get`. L'URL di user-service **non** Ã¨ mai scritto nel codice (REQ-EVT-B05 criterio 6).
+Nessun altro modulo chiama `os.environ.get`. L'URL di user-service **non** è mai scritto nel codice (REQ-EVT-B05 criterio 6).
 
-### 2.2 `__init__.py` â€” factory
+### 2.2 `__init__.py` — factory
 
 ```python
 def create_app(repository=None, user_client=None):
@@ -71,7 +71,7 @@ def create_app(repository=None, user_client=None):
     return app
 ```
 
-Due parametri iniettabili: `repository` e `user_client`. Questo Ã¨ il punto chiave per la testabilitÃ  â€” i test unitari passano un `user_client` finto senza toccare nÃ© la rete nÃ© le variabili d'ambiente.
+Due parametri iniettabili: `repository` e `user_client`. Questo è il punto chiave per la testabilità — i test unitari passano un `user_client` finto senza toccare né la rete né le variabili d'ambiente.
 
 ### 2.3 `__main__.py`
 
@@ -85,9 +85,9 @@ if __name__ == "__main__":
 
 Bind su `0.0.0.0` (la suite avvia il servizio come sottoprocesso e lo interroga dall'esterno).
 
-### 2.4 `routes.py` â€” layer HTTP
+### 2.4 `routes.py` — layer HTTP
 
-ResponsabilitÃ  esclusiva: parsing richiesta â†’ delega al service â†’ serializzazione risposta. Nessuna regola di business, nessuna chiamata HTTP verso altri servizi.
+Responsabilità esclusiva: parsing richiesta ? delega al service ? serializzazione risposta. Nessuna regola di business, nessuna chiamata HTTP verso altri servizi.
 
 | Funzione | Metodo | Path | Requisito |
 |---|---|---|---|
@@ -101,13 +101,13 @@ ResponsabilitÃ  esclusiva: parsing richiesta â†’ delega al service â†’ serializz
 
 Helper privati (duplicati per servizio, come da `structure.md`):
 - `_error_response(code, message, status, details=None)`
-- `_validate_event_input(data, partial=False) -> list[str]`
-- `_serialize_event(event) -> dict` â€” solo i 12 campi del contratto
+- `_validate_event_input(data, partial=False) -> list[str]` — i vincoli di lunghezza sui campi stringa obbligatori (`title`, `venue`, `city`) si applicano al valore **trimmed** (BUG-02): `len(value.strip())`, altrimenti una stringa di soli spazi supererebbe il `minLength` del contratto pur essendo semanticamente vuota. Il valore memorizzato resta quello inviato dal client: il `.strip()` decide se accettare, non riscrive il dato
+- `_serialize_event(event) -> dict` — solo i 12 campi del contratto
 - `_paginate(page_items, page, page_size, total) -> dict`
 
-**Ordine di validazione (importante):** la validazione dei campi avviene **prima** della chiamata a user-service (REQ-EVT-E01 criterio 4). Questo evita chiamate di rete inutili su payload giÃ  malformati e rende il 422 di validazione deterministico anche con la dipendenza spenta.
+**Ordine di validazione (importante):** la validazione dei campi avviene **prima** della chiamata a user-service (REQ-EVT-E01 criterio 4). Questo evita chiamate di rete inutili su payload già malformati e rende il 422 di validazione deterministico anche con la dipendenza spenta.
 
-**Mappatura eccezioni â†’ HTTP:**
+**Mappatura eccezioni ? HTTP:**
 
 | Eccezione da `service.py` | HTTP | `error.code` |
 |---|---|---|
@@ -118,9 +118,9 @@ Helper privati (duplicati per servizio, come da `structure.md`):
 | `ValidationError` | 422 | `VALIDATION_ERROR` |
 | `DependencyUnavailableError` | 503 | `DEPENDENCY_UNAVAILABLE` |
 
-### 2.5 `service.py` â€” business logic
+### 2.5 `service.py` — business logic
 
-Riceve due dipendenze iniettate: `repository` (persistenza) e `user_client` (dipendenza HTTP). Non conosce Flask, non conosce `requests`, non sa quale backend Ã¨ attivo.
+Riceve due dipendenze iniettate: `repository` (persistenza) e `user_client` (dipendenza HTTP). Non conosce Flask, non conosce `requests`, non sa quale backend è attivo.
 
 | Metodo | Requisiti |
 |---|---|
@@ -131,7 +131,7 @@ Riceve due dipendenze iniettate: `repository` (persistenza) e `user_client` (dip
 | `update_event(id, data)` | B01, B02, B03, B04, E05 |
 | `delete_event(id)` | E06 |
 
-**REQ-EVT-B01 + B02 â€” validazione organizzatore.** Metodo privato condiviso:
+**REQ-EVT-B01 + B02 — validazione organizzatore.** Metodo privato condiviso:
 
 ```python
 def _assert_valid_organizer(self, organizer_id):
@@ -140,9 +140,9 @@ def _assert_valid_organizer(self, organizer_id):
         raise InvalidOrganizerError(organizer_id)
 ```
 
-Il client distingue giÃ  "non trovato" da "dipendenza giÃ¹"; il service aggiunge solo il controllo sul ruolo. CosÃ¬ la differenza tra `REFERENCE_NOT_FOUND` e `INVALID_ORGANIZER` (REQ-EVT-B02 criterio 4) resta in un unico punto.
+Il client distingue già "non trovato" da "dipendenza giù"; il service aggiunge solo il controllo sul ruolo. Così la differenza tra `REFERENCE_NOT_FOUND` e `INVALID_ORGANIZER` (REQ-EVT-B02 criterio 4) resta in un unico punto.
 
-**REQ-EVT-B03 â€” coerenza delle date.** Per `PATCH` la validazione avviene sul **merge** tra dati stored e dati nuovi, non solo sul payload:
+**REQ-EVT-B03 — coerenza delle date.** Per `PATCH` la validazione avviene sul **merge** tra dati stored e dati nuovi, non solo sul payload:
 
 ```python
 merged_start = data.get("start_date", existing["start_date"])
@@ -153,7 +153,7 @@ if merged_end < merged_start:       # confronto lessicografico valido su YYYY-MM
 
 Il formato `YYYY-MM-DD` rende il confronto lessicografico equivalente al confronto cronologico: nessuna conversione a `date` necessaria.
 
-**REQ-EVT-B04 â€” macchina a stati.** Tabella esplicita delle transizioni ammesse:
+**REQ-EVT-B04 — macchina a stati.** Tabella esplicita delle transizioni ammesse:
 
 ```python
 _ALLOWED_TRANSITIONS = {
@@ -175,7 +175,7 @@ Definire le transizioni come dato (non come catena di `if`) rende il requisito l
 
 ## 3. Isolamento della chiamata HTTP a user-service
 
-Questa Ã¨ la parte nuova rispetto a user-service e merita una descrizione dettagliata, perchÃ© da essa dipendono i test IT-E02, IT-E03 e IT-E08.
+Questa è la parte nuova rispetto a user-service e merita una descrizione dettagliata, perché da essa dipendono i test IT-E02, IT-E03 e IT-E08.
 
 ### 3.1 `clients/user_client.py`
 
@@ -225,18 +225,18 @@ class UserClient:
 
 Punti di progetto:
 
-- **Timeout fisso a 2 s** passato dal costruttore, valore da `config.DEPENDENCY_TIMEOUT`. Mai omesso: una `requests.get` senza `timeout` bloccherebbe il worker indefinitamente e farebbe fallire IT-E08 per timeout del test anzichÃ© con un 503.
-- **`requests.Timeout` e `requests.ConnectionError` catturati insieme**: i due scenari di IT-E08 (porta chiusa â†’ `ConnectionError`; host che non risponde â†’ `Timeout`) devono produrre lo stesso 503.
+- **Timeout fisso a 2 s** passato dal costruttore, valore da `config.DEPENDENCY_TIMEOUT`. Mai omesso: una `requests.get` senza `timeout` bloccherebbe il worker indefinitamente e farebbe fallire IT-E08 per timeout del test anziché con un 503.
+- **`requests.Timeout` e `requests.ConnectionError` catturati insieme**: i due scenari di IT-E08 (porta chiusa ? `ConnectionError`; host che non risponde ? `Timeout`) devono produrre lo stesso 503.
 - **`requests.RequestException` come rete di sicurezza**: qualunque altro errore della libreria diventa 503, non un 500 non gestito. Un 500 non mappato violerebbe il contratto.
-- **L'ordine dei controlli conta**: `404` viene valutato *prima* di `>= 500`, cosÃ¬ un utente inesistente non viene confuso con un guasto della dipendenza.
-- **Il client non conosce il concetto di "organizzatore"**: restituisce il dict utente e lascia al service il controllo sul ruolo. Il nome `OrganizerNotFoundError` Ã¨ dettato dal mapping del contratto di event-service, ma la semantica del client resta "utente non trovato".
+- **L'ordine dei controlli conta**: `404` viene valutato *prima* di `>= 500`, così un utente inesistente non viene confuso con un guasto della dipendenza.
+- **Il client non conosce il concetto di "organizzatore"**: restituisce il dict utente e lascia al service il controllo sul ruolo. Il nome `OrganizerNotFoundError` è dettato dal mapping del contratto di event-service, ma la semantica del client resta "utente non trovato".
 - **Nessun URL hard-coded**: `base_url` arriva da `config.USER_SERVICE_URL` (REQ-EVT-B05 criterio 6).
 
-### 3.2 MockabilitÃ  nei test unitari
+### 3.2 Mockabilità nei test unitari
 
 Due livelli di isolamento, usati in file diversi:
 
-**a) `responses` â€” mock a livello HTTP (`test_routes.py`, `test_service.py`).**
+**a) `responses` — mock a livello HTTP (`test_routes.py`, `test_service.py`).**
 Intercetta la chiamata `requests` reale senza sostituire il client. Verifica che URL, metodo e gestione degli status siano corretti:
 
 ```python
@@ -266,8 +266,8 @@ responses.add(
 # -> attesa: 503 DEPENDENCY_UNAVAILABLE
 ```
 
-**b) Fake client iniettato â€” mock a livello di interfaccia (`test_service.py`).**
-Quando il test riguarda solo la logica di business (es. la tabella delle transizioni), un fake esplicito Ã¨ piÃ¹ veloce e piÃ¹ leggibile di un mock HTTP:
+**b) Fake client iniettato — mock a livello di interfaccia (`test_service.py`).**
+Quando il test riguarda solo la logica di business (es. la tabella delle transizioni), un fake esplicito è più veloce e più leggibile di un mock HTTP:
 
 ```python
 class FakeUserClient:
@@ -282,11 +282,11 @@ svc = EventService(MemoryEventRepository(),
                    FakeUserClient(user={"id": "u1", "role": "organizer"}))
 ```
 
-Il fake Ã¨ possibile proprio perchÃ© `create_app` accetta `user_client` come parametro e `EventService` dipende dall'interfaccia, non dalla classe concreta.
+Il fake è possibile proprio perché `create_app` accetta `user_client` come parametro e `EventService` dipende dall'interfaccia, non dalla classe concreta.
 
 ### 3.3 Verifica dell'error mapping nei test
 
-Tabella dei casi che i test unitari devono coprire esplicitamente â€” corrisponde 1:1 al mapping di `platform-standards.md`:
+Tabella dei casi che i test unitari devono coprire esplicitamente — corrisponde 1:1 al mapping di `platform-standards.md`:
 
 | Scenario simulato | Atteso | Test acceptance corrispondente |
 |---|---|---|
@@ -299,7 +299,7 @@ Tabella dei casi che i test unitari devono coprire esplicitamente â€” corrispond
 
 ---
 
-## 4. Persistenza â€” interfaccia e implementazioni
+## 4. Persistenza — interfaccia e implementazioni
 
 ### 4.1 `repository/base.py`
 
@@ -319,7 +319,7 @@ class AbstractEventRepository(ABC):
 
 Nello stesso modulo vivono le eccezioni di dominio: `EventNotFoundError`, `OrganizerNotFoundError`, `InvalidOrganizerError`, `InvalidStatusTransitionError`, `ValidationError`, `DependencyUnavailableError`.
 
-Nessun `find_by_email`-equivalente: event-service non ha vincoli di unicitÃ  su alcun campo.
+Nessun `find_by_email`-equivalente: event-service non ha vincoli di unicità su alcun campo.
 
 ### 4.2 `memory.py`
 Dizionario `{id: event_dict}` in-process. `list_all` filtra iterando. Restituisce sempre copie (`dict(e)`) per evitare mutazioni accidentali dall'esterno.
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS events (
 );
 ```
 
-`price` Ã¨ `REAL`: la serializzazione a 2 decimali Ã¨ responsabilitÃ  di `_serialize_event`, non dello schema. Connessione aperta e chiusa per operazione con `try/finally`.
+`price` è `REAL`: la serializzazione a 2 decimali è responsabilità di `_serialize_event`, non dello schema. Connessione aperta e chiusa per operazione con `try/finally`.
 
 ### 4.5 Factory
 
@@ -371,7 +371,7 @@ Import lazy, per evitare effetti collaterali al caricamento del modulo nei test.
 
 ## 5. Riferimento al contratto OpenAPI
 
-Contratto: `contracts/openapi/event-service.yaml` â€” **non modificabile** (protetto da checksum).
+Contratto: `contracts/openapi/event-service.yaml` — **non modificabile** (protetto da checksum).
 
 | Schema | Generato da |
 |---|---|
@@ -384,16 +384,16 @@ Contratto: `contracts/openapi/event-service.yaml` â€” **non modificabile** (prot
 
 Vincoli del contratto e dove sono rispettati:
 
-- `additionalProperties: false` â†’ `_serialize_event` elenca esplicitamente i 12 campi; il dict interno non viene mai serializzato direttamente.
-- `format: uuid` su `id` e `organizer_id` â†’ `uuid.uuid4()` per `id`; `organizer_id` arriva dal client e viene validato per formato.
-- `format: date` su `start_date` / `end_date` â†’ regex `^\d{4}-\d{2}-\d{2}$` in validazione.
-- `format: date-time` su `created_at` / `updated_at` â†’ `%Y-%m-%dT%H:%M:%SZ`.
-- `minLength: 3, maxLength: 120` su `title` â†’ validato in `routes.py`.
-- `minimum: 1, maximum: 10000` su `capacity` â†’ validato in `routes.py`.
-- `minimum: 0` su `price` â†’ validato in `routes.py`.
-- `EventStatus` enum â†’ validato in `routes.py`; le transizioni sono in `service.py`.
-- `503` dichiarato su POST/PUT/PATCH ma **non** su GET/DELETE â†’ coerente col fatto che solo le scritture chiamano user-service (REQ-EVT-E02/E03/E06 lo vietano esplicitamente).
-- Header `Location` su 201 â†’ aggiunto in `create_event`.
+- `additionalProperties: false` ? `_serialize_event` elenca esplicitamente i 12 campi; il dict interno non viene mai serializzato direttamente.
+- `format: uuid` su `id` e `organizer_id` ? `uuid.uuid4()` per `id`; `organizer_id` arriva dal client e viene validato per formato.
+- `format: date` su `start_date` / `end_date` ? regex `^\d{4}-\d{2}-\d{2}$` in validazione.
+- `format: date-time` su `created_at` / `updated_at` ? `%Y-%m-%dT%H:%M:%SZ`.
+- `minLength: 3, maxLength: 120` su `title` ? validato in `routes.py`.
+- `minimum: 1, maximum: 10000` su `capacity` ? validato in `routes.py`.
+- `minimum: 0` su `price` ? validato in `routes.py`.
+- `EventStatus` enum ? validato in `routes.py`; le transizioni sono in `service.py`.
+- `503` dichiarato su POST/PUT/PATCH ma **non** su GET/DELETE ? coerente col fatto che solo le scritture chiamano user-service (REQ-EVT-E02/E03/E06 lo vietano esplicitamente).
+- Header `Location` su 201 ? aggiunto in `create_event`.
 
 ---
 
@@ -410,28 +410,28 @@ Fixture parametrizzata sui tre backend (`memory`, `json` con `tmp_path`, `sqlite
 - propagazione di `DependencyUnavailableError` (B05).
 
 ### 6.3 `test_routes.py`
-Flask test client con `MemoryEventRepository`. Le chiamate a user-service sono mockate con `responses` (mock a livello HTTP), cosÃ¬ si verifica anche che il client costruisca l'URL corretto. Copre status code, header `Location`, forma del body, e i sei scenari della tabella Â§3.3.
+Flask test client con `MemoryEventRepository`. Le chiamate a user-service sono mockate con `responses` (mock a livello HTTP), così si verifica anche che il client costruisca l'URL corretto. Copre status code, header `Location`, forma del body, e i sei scenari della tabella §3.3.
 
 ### 6.4 `test_contract.py`
 Almeno un test per endpoint, ciascuno con `assert_matches_contract("event-service", method, path, response)` da `contracts/validator.py`.
 
-Due accorgimenti giÃ  emersi su user-service e da riapplicare qui:
+Due accorgimenti già emersi su user-service e da riapplicare qui:
 - la workspace root va aggiunta a `sys.path` per importare `contracts.validator`;
-- la Flask test response espone `.json` come **proprietÃ **, mentre il validator si aspetta un `requests.Response` (con `.json()` chiamabile) oppure un dict `{"status_code", "headers", "json"}`. Serve quindi un helper `_adapt(response)` che converta la risposta Flask in quel dict. Il validator Ã¨ non modificabile: l'adattamento avviene nel test.
+- la Flask test response espone `.json` come **proprietà**, mentre il validator si aspetta un `requests.Response` (con `.json()` chiamabile) oppure un dict `{"status_code", "headers", "json"}`. Serve quindi un helper `_adapt(response)` che converta la risposta Flask in quel dict. Il validator è non modificabile: l'adattamento avviene nel test.
 
-Le chiamate a user-service sono mockate con `responses` anche qui, cosÃ¬ i test di contratto restano indipendenti dalla rete.
+Le chiamate a user-service sono mockate con `responses` anche qui, così i test di contratto restano indipendenti dalla rete.
 
 ### 6.5 `test_integration.py`
 Avvia il **solo** event-service come sottoprocesso su porta libera (`socket.bind(("", 0))`), con `STORAGE_BACKEND=memory`. `USER_SERVICE_URL` viene puntato a una porta chiusa: verifica end-to-end che il processo reale risponda `503 DEPENDENCY_UNAVAILABLE` (equivalente locale di IT-E08). Teardown con `terminate()` + `wait(timeout=5)`.
 
 ### 6.6 `test_integration_real.py`
-Avvia **due** processi reali â€” user-service ed event-service â€” su due porte libere, con `USER_SERVICE_URL` di event-service puntato alla porta effettiva di user-service. Nessun mock. Copre i tre scenari richiesti:
+Avvia **due** processi reali — user-service ed event-service — su due porte libere, con `USER_SERVICE_URL` di event-service puntato alla porta effettiva di user-service. Nessun mock. Copre i tre scenari richiesti:
 
-1. organizzatore valido creato via user-service â†’ `POST /api/v1/events` â†’ **201**;
-2. `organizer_id` inesistente â†’ **422 `REFERENCE_NOT_FOUND`**;
-3. user-service terminato durante il test â†’ **503 `DEPENDENCY_UNAVAILABLE`**.
+1. organizzatore valido creato via user-service ? `POST /api/v1/events` ? **201**;
+2. `organizer_id` inesistente ? **422 `REFERENCE_NOT_FOUND`**;
+3. user-service terminato durante il test ? **503 `DEPENDENCY_UNAVAILABLE`**.
 
-Ordine di avvio: prima user-service, poi event-service (che ne riceve l'URL). Ordine di spegnimento inverso. Il terzo scenario va eseguito per ultimo, perchÃ© spegne una dipendenza condivisa dal modulo.
+Ordine di avvio: prima user-service, poi event-service (che ne riceve l'URL). Ordine di spegnimento inverso. Il terzo scenario va eseguito per ultimo, perché spegne una dipendenza condivisa dal modulo.
 
 ### 6.7 Coverage
 
