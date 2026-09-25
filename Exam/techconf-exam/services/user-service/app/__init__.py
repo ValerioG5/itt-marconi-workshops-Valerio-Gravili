@@ -2,6 +2,7 @@ from flask import Flask
 
 from app import config
 from app.routes import register_routes
+from app.service import UserService
 
 
 def _make_repository():
@@ -21,7 +22,6 @@ def create_app(repository=None):
     app = Flask(__name__)
     if repository is None:
         repository = _make_repository()
-    # Il service e le route vengono collegati nei task successivi.
-    # Per ora l'app è restituita senza route (tranne quelle aggiunte da register_routes stub).
-    register_routes(app, repository)
+    service = UserService(repository)
+    register_routes(app, service)
     return app

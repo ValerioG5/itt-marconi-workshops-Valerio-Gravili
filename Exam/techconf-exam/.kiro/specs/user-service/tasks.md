@@ -30,7 +30,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-02 — Health endpoint**
+- [x] **T-02 — Health endpoint**
 
   Implementa `GET /health` e l'handler globale per JSON malformato (400).
 
