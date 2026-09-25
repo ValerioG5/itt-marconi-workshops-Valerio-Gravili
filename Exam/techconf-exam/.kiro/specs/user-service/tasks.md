@@ -226,7 +226,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-12 — Test unitari: layer HTTP (`test_routes.py`)**
+- [x] **T-12 — Test unitari: layer HTTP (`test_routes.py`)**
 
   Scrivi `tests/test_routes.py`.
 
