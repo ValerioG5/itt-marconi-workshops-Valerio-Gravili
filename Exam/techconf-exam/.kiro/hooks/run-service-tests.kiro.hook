@@ -1,0 +1,14 @@
+﻿{
+  "enabled": true,
+  "name": "Run unit tests on Python save",
+  "description": "When a .py file inside services/<name>-service/ is saved, runs pytest on that service's tests/ folder and reports the outcome.",
+  "version": "1",
+  "when": {
+    "type": "fileSaved",
+    "patterns": ["services/**/*.py"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Python file was saved inside the `services/` directory.\n\nThe saved file path is: {{file}}\n\n1. Extract the service name from the path. According to structure.md the layout is:\n   `services/<service-name>/app/...` or `services/<service-name>/tests/...`\n   So the service name is the first path component after `services/`.\n   Example: `services/user-service/app/routes.py` → service = `user-service`.\n\n2. Derive the absolute path to that service's test folder:\n   `services/<service-name>/tests/`\n\n3. Run the unit tests for that service only — do NOT run tests for other services:\n   ```\n   cd services/<service-name> && pytest tests/ -v --tb=short --no-header\n   ```\n   (omit `--cov` to keep output concise during development; full coverage is run separately)\n\n4. Show the full pytest output verbatim, then summarise in one line:\n   - how many tests passed / failed / errored\n   - if any test failed, list the test IDs\n\nDo not edit any file. Only run the tests and report."
+  }
+}
