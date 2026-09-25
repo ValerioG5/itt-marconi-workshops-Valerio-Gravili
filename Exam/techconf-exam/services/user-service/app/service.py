@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.repository.base import AbstractUserRepository, UserNotFoundError, EmailAlreadyExistsError
 
@@ -16,7 +16,7 @@ class UserService:
 
     @staticmethod
     def _now() -> str:
-        return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # ------------------------------------------------------------------
     # Public API
