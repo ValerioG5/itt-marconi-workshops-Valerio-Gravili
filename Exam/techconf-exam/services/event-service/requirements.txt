@@ -1,0 +1,7 @@
+flask
+requests
+pytest
+pytest-cov
+responses
+pyyaml
+jsonschema
