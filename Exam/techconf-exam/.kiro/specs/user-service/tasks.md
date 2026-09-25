@@ -59,7 +59,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-04 — Repository JSON**
+- [x] **T-04 — Repository JSON**
 
   Implementa completamente `JsonUserRepository`.
 
