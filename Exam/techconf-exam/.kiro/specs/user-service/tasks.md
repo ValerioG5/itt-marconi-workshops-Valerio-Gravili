@@ -7,7 +7,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-01 — Scaffolding del package e configurazione**
+- [x] **T-01 — Scaffolding del package e configurazione**
 
   Crea la struttura di directory e i file scheletro del servizio.
 
