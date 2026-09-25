@@ -91,7 +91,7 @@ Commit atteso per ogni task: `feat(user-service): <descrizione> [T-XX]`
 
 ---
 
-- [ ] **T-06 — Factory e wiring in `__init__.py`**
+- [x] **T-06 — Factory e wiring in `__init__.py`**
 
   Collega la factory al repository concreto scelto da `STORAGE_BACKEND`.
 
